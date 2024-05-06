@@ -1,0 +1,63 @@
+.container-fluid {
+  margin: 16px;
+
+  form {
+    display: flex;
+    grid-template-columns: 187px 187px 187px 187px 314px;
+    column-gap: 8px;
+    display: grid;
+    align-items: center;
+    row-gap: 10px;
+    margin-bottom: 16px;
+
+    .form-full-width {
+      margin-right: 16px;
+
+      .mat-form-field-appearance-outline .mat-form-field-wrapper {
+        margin: 0 !important;
+      }
+
+      .mat-form-field-wrapper {
+        padding-bottom: 8px !important;
+      }
+
+      .mat-form-field-infix {
+        height: 12px;
+      }
+    }
+
+  }
+
+  .chose-file {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+
+    &__action {
+      margin-right: 2pxpx;
+    }
+
+    &__file-name {
+      background-color: antiquewhite;
+      color: darkgoldenrod;
+      font-size: 14px;
+      font-style: italic;
+      padding: 8px 16px;
+    }
+    .action-remove-file{
+      margin-left: 8px;
+    }
+    .action-import-file {
+      margin-left: 24px;
+    }
+  }
+
+  .example-table-container {
+    position: relative;
+    max-height: 650px;
+    overflow: auto;
+  }
+  table{
+    width: 100%;
+  }
+}

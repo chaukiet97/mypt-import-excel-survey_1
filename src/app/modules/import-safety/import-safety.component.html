@@ -1,0 +1,145 @@
+<div class="container-fluid">
+  <form class="form row" [formGroup]="formCreated" *ngIf="formCreated">
+    <mat-form-field class="form-full-width" appearance="outline">
+      <input matInput placeholder="Đơn vị khảo sát" formControlName="unit_type">
+      <!-- <mat-select formControlName="unit_type" placeholder="Đơn vị khảo sát">
+        <mat-option value="all">All</mat-option>
+      </mat-select> -->
+    </mat-form-field>
+    <mat-form-field class="form-full-width" appearance="outline">
+      <input matInput placeholder="Vùng/Chi nhánh" formControlName="unit_name">
+      <!-- <mat-select formControlName="unit_name" placeholder="Vùng/Chi nhánh">
+        <mat-option value="all">All</mat-option>
+      </mat-select> -->
+    </mat-form-field>
+    <mat-form-field class="form-full-width" appearance="outline">
+      <!-- <input matInput placeholder="Loại khảo sát" formControlName="survey_type"> -->
+      <mat-select formControlName="survey_type" placeholder="Loại khảo sát">
+        <mat-option value="normal">Mặt Định</mat-option>
+        <mat-option value="labor_safety">Loại Có Đáp Án</mat-option>
+        <mat-option value="popup">Popup</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="form-full-width" appearance="outline">
+      <input matInput placeholder="Tên khảo sát" formControlName="title">
+    </mat-form-field>
+    <mat-form-field class="form-full-width" appearance="outline">
+      <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+        <input matStartDate formControlName="start_at" placeholder="Ngày bắt đầu">
+        <input matEndDate formControlName="end_at" placeholder="Ngày kết thúc">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+  </form>
+  <div class="chose-file">
+    <div class="chose-file__action">
+      <button type="button" [disabled]="!formCreated.valid" mat-raised-button (click)="inputFile.click()">Choose
+        File</button>
+      <input hidden (change)="onChange($event)" #inputFile type="file" id="file">
+    </div>
+    <div class="chose-file__file-name" *ngIf="isExcelFile">{{file_import}}
+    </div>
+    <button *ngIf="isExcelFile" class="action-remove-file" (click)="deleteFile()" mat-icon-button
+      aria-label="Example icon button with a vertical three dot icon">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="action-import-file" *ngIf="isExcelFile">
+      <button mat-raised-button (click)="submitFileImport()">Lưu File Import</button>
+    </div>
+    <div class="action-import-file">
+      <button mat-raised-button (click)="exportFileReport()">Xuất Báo Cáo</button>
+    </div>
+  </div>
+  <div *ngIf="isExcelFile" class="example-container card-tables">
+    <ng-container *ngIf="typeSurvey && typeSurvey['value']=='normal'">
+            <div class="example-table-container" *ngIf="isExcelFile">
+        <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+          <ng-container matColumnDef="STT">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>STT</th>
+            <td mat-cell *matCellDef="let row">{{row.STT}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Loại Câu Hỏi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Loại Câu Hỏi</th>
+            <td mat-cell *matCellDef="let row">{{row['Loại Câu Hỏi']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Trạng Thái">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Trạng Thái</th>
+            <td mat-cell *matCellDef="let row">{{row['Trạng Thái']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Nội dung câu hỏi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nội dung câu hỏi</th>
+            <td mat-cell *matCellDef="let row">{{row['Nội dung câu hỏi']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 1">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 1</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 1']  | safipipe"></td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 2">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 2</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 2']  | safipipe"></td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 3">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 3</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 3']  | safipipe"></td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="keys; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: keys;"></tr>
+        </table>
+      </div>
+      <mat-paginator *ngIf="isExcelFile" [length]="resultsLength" [pageSize]="10"
+        aria-label="Select page of GitHub search results"></mat-paginator>
+    </ng-container>
+    <ng-container *ngIf="typeSurvey && typeSurvey['value']=='labor_safety'">
+      <div class="example-table-container" *ngIf="isExcelFile">
+        <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+          <ng-container matColumnDef="STT">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>STT</th>
+            <td mat-cell *matCellDef="let row">{{row.STT}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Nội dung câu hỏi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nội dung câu hỏi</th>
+            <td mat-cell *matCellDef="let row">{{row['Nội dung câu hỏi']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Nhóm câu hỏi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nhóm câu hỏi</th>
+            <td mat-cell *matCellDef="let row">{{row['Nhóm câu hỏi']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Loại đáp án đúng">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Loại đáp án đúng</th>
+            <td mat-cell *matCellDef="let row">{{row['Loại đáp án đúng']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Đáp án đúng">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Đáp án đúng</th>
+            <td mat-cell *matCellDef="let row">{{row['Đáp án đúng']}}</td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 1">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 1</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 1']  | safipipe"></td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 2">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 2</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 2']  | safipipe"></td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 3">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 3</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 3']  | safipipe"></td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 4">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 4</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 4']  | safipipe"></td>
+          </ng-container>
+          <ng-container matColumnDef="Câu trả lời 5">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Câu trả lời 5</th>
+            <td mat-cell *matCellDef="let row" [innerHTML]="row['Câu trả lời 5']  | safipipe"></td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="keys; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: keys;"></tr>
+        </table>
+      </div>
+      <mat-paginator *ngIf="isExcelFile" [length]="resultsLength" [pageSize]="10"
+        aria-label="Select page of GitHub search results"></mat-paginator>
+    </ng-container>
+  </div>
+
+</div>
